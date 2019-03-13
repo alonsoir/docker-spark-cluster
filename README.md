@@ -212,3 +212,8 @@ Running Spark using the REST application submission protocol.
 * Right now I don't have enough resources to make a Yarn, Mesos or Kubernetes based cluster :(.
 
 * This will be useful to use CI/CD pipelines for your spark apps(A really difficult and hot topic)
+
+# TODO
+
+* Update spark version from 2.3.1 to 2.4.0. DONE!
+* Change /mnt to /tmp in order to work within OSX. DONE!
