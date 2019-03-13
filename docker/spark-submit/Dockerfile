@@ -1,4 +1,4 @@
-FROM spark-base:2.3.1
+FROM spark-base:2.4.0
 
 COPY spark-submit.sh /
 
