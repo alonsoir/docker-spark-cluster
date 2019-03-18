@@ -115,24 +115,24 @@ Now let`s make a **wild spark submit** to validate the distributed nature of our
 
 The first thing you need to do is to make a spark application. Our spark-submit image is designed to run scala code (soon will ship pyspark support guess I was just lazy to do so..).
 
-In my case I am using an app called  [crimes-app](https://). You can make or use your own scala app, I 've just used this one because I had it at hand.
+In my case I am using the typical word count example from Databricks called  [mini-complete-sample](https://github.com/databricks/learning-spark/tree/master/mini-complete-example). You can make or use your own scala app, I 've just used this one because I had it at hand. I know, i am too lazy to use another one. :) 
 
 
 ## Ship your jar & dependencies on the Workers and Master
 
 A necesary step to make a **spark-submit** is to copy your application bundle into all workers, also any configuration file or input file you need.
 
-Luckily for us we are using docker volumes so, you just have to copy your app and configs into /mnt/spark-apps, and your input files into /mnt/spark-files.
+Luckily for us we are using docker volumes so, you just have to copy your app and configs into /tmp/spark-apps, and your input files into /tmp/spark-files.
 
 ```bash
 #Copy spark application into all workers's app folder
-cp /home/workspace/crimes-app/build/libs/crimes-app.jar /mnt/spark-apps
+cp learning-spark-mini-example-0.0.1.jar /tmp/spark-apps/
 
-#Copy spark application configs into all workers's app folder
-cp -r /home/workspace/crimes-app/config /mnt/spark-apps
+#Copy spark application configs into all workers's app folder, if needed.
+# cp -r /home/workspace/crimes-app/config /mnt/spark-apps
 
-# Copy the file to be processed to all workers's data folder
-cp /home/Crimes_-_2001_to_present.csv /mnt/spark-files
+# Copy the file to be processed to all workers's data folder. I am going to use this README file
+cp README.md /tmp/spark-data/
 ```
 
 ## Check the successful copy of the data and app jar (Optional)
@@ -161,16 +161,21 @@ After running one of this commands you have to see your app's jar and files.
 ## Use docker spark-submit
 
 ```bash
-#Creating some variables to make the docker run command more readable
+#Creating some variables to make the docker run command more readable. (bash)
 #App jar environment used by the spark-submit image
-SPARK_APPLICATION_JAR_LOCATION="/opt/spark-apps/crimes-app.jar"
+SPARK_APPLICATION_JAR_LOCATION="/opt/spark-apps/learning-spark-mini-example-0.0.1.jar"
+# I am using fish shell, so in my particular case, i have to use:
+set SPARK_APPLICATION_JAR_LOCATION /opt/spark-apps/learning-spark-mini-example-0.0.1.jar
 #App main class environment used by the spark-submit image
-SPARK_APPLICATION_MAIN_CLASS="org.mvb.applications.CrimesApp"
-#Extra submit args used by the spark-submit image
-SPARK_SUBMIT_ARGS="--conf spark.executor.extraJavaOptions='-Dconfig-path=/opt/spark-apps/dev/config.conf'"
+SPARK_APPLICATION_MAIN_CLASS="com.oreilly.learningsparkexamples.mini.java.WordCount"
+set SPARK_APPLICATION_MAIN_CLASS com.oreilly.learningsparkexamples.mini.java.WordCount
+# Extra submit args used by the spark-submit image
+# SPARK_SUBMIT_ARGS="--conf spark.executor.extraJavaOptions='-Dconfig-path=/opt/spark-apps/dev/config.conf'"
+set SPARK_SUBMIT_ARGS "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"
 
 #We have to use the same network as the spark cluster(internally the image resolves spark master as spark://spark-master:7077)
-docker run --network docker-spark-cluster_spark-network -v /mnt/spark-apps:/opt/spark-apps --env SPARK_APPLICATION_JAR_LOCATION=$SPARK_APPLICATION_JAR_LOCATION --env SPARK_APPLICATION_MAIN_CLASS=$SPARK_APPLICATION_MAIN_CLASS spark-submit:2.3.1
+
+docker run --network docker-spark-cluster_spark-network -v /tmp/spark-apps:/opt/spark-apps --env SPARK_APPLICATION_JAR_LOCATION=$SPARK_APPLICATION_JAR_LOCATION --env SPARK_APPLICATION_MAIN_CLASS=$SPARK_APPLICATION_MAIN_CLASS spark-submit:2.4.0
 
 ```
 
