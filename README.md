@@ -102,8 +102,8 @@ To make app running easier I've shipped two volume mounts described in the follo
 
 Host Mount|Container Mount|Purposse
 ---|---|---
-/mnt/spark-apps|/opt/spark-apps|Used to make available your app's jars on all workers & master
-/mnt/spark-data|/opt/spark-data| Used to make available your app's data on all workers & master
+/tmp/spark-apps|/opt/spark-apps|Used to make available your app's jars on all workers & master
+/tmp/spark-data|/opt/spark-data| Used to make available your app's data on all workers & master
 
 This is basically a dummy DFS created from docker Volumes...(maybe not...)
 
