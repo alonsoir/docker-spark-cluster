@@ -115,10 +115,16 @@ Now let`s make a **wild spark submit** to validate the distributed nature of our
 
 The first thing you need to do is to make a spark application. Our spark-submit image is designed to run scala code (soon will ship pyspark support guess I was just lazy to do so..).
 
-In my case I am using the typical word count example from Databricks called  [mini-complete-sample](https://github.com/databricks/learning-spark/tree/master/mini-complete-example). You can make or use your own scala app, I 've just used this one because I had it at hand. I know, i am too lazy to use another one. :) 
+In my case I am using the typical word count example from Databricks called  [mini-complete-sample](https://github.com/databricks/learning-spark/tree/master/mini-complete-example).
 
+You can make or use your own scala app, I 've just used this one because I had it at hand. I know, i am too lazy to use another one, but finally i had to adjust it a bit, because it is outdated, spark version, it has to be provided... 
+I have added my own jar to this repo, learning-spark-mini-example_2.11-0.0.1.jar, use it.
 
-## Ship your jar & dependencies on the Workers and Master
+## Upload a file to do a wordcount from it.
+
+With Docker up and running, you can copy whatever file you want to /tmp/spark-data, in my case, this README.md file.
+
+## Ship your jar & dependencies on the Workers and Master (Running the app using docker)
 
 A necesary step to make a **spark-submit** is to copy your application bundle into all workers, also any configuration file or input file you need.
 
@@ -126,7 +132,7 @@ Luckily for us we are using docker volumes so, you just have to copy your app an
 
 ```bash
 #Copy spark application into all workers's app folder
-cp learning-spark-mini-example-0.0.1.jar /tmp/spark-apps/
+cp learning-spark-mini-example_2.11-0.0.1.jar /tmp/spark-apps/
 
 #Copy spark application configs into all workers's app folder, if needed.
 # cp -r /home/workspace/crimes-app/config /mnt/spark-apps
@@ -163,12 +169,12 @@ After running one of this commands you have to see your app's jar and files.
 ```bash
 #Creating some variables to make the docker run command more readable. (bash)
 #App jar environment used by the spark-submit image
-SPARK_APPLICATION_JAR_LOCATION="/opt/spark-apps/learning-spark-mini-example-0.0.1.jar"
+SPARK_APPLICATION_JAR_LOCATION="/opt/spark-apps/learning-spark-mini-example-2.11-0.0.1.jar"
 # I am using fish shell, so in my particular case, i have to use:
-set SPARK_APPLICATION_JAR_LOCATION /opt/spark-apps/learning-spark-mini-example-0.0.1.jar
+set SPARK_APPLICATION_JAR_LOCATION /opt/spark-apps/learning-spark-mini-example-2.11-0.0.1.jar
 #App main class environment used by the spark-submit image
-SPARK_APPLICATION_MAIN_CLASS="com.oreilly.learningsparkexamples.mini.java.WordCount"
-set SPARK_APPLICATION_MAIN_CLASS com.oreilly.learningsparkexamples.mini.java.WordCount
+SPARK_APPLICATION_MAIN_CLASS="com.oreilly.learningsparkexamples.mini.scala.WordCount"
+set SPARK_APPLICATION_MAIN_CLASS com.oreilly.learningsparkexamples.mini.scala.WordCount
 # Extra submit args used by the spark-submit image
 # SPARK_SUBMIT_ARGS="--conf spark.executor.extraJavaOptions='-Dconfig-path=/opt/spark-apps/dev/config.conf'"
 set SPARK_SUBMIT_ARGS "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"
@@ -197,6 +203,26 @@ Running Spark using the REST application submission protocol.
   "success" : true
 }
 ```
+## (Troubleshooting. Running the app using spark-submit command)
+
+After you have the jar file inside folder:
+
+~/s/docker-spark-cluster> docker exec -ti spark-master /bin/bash
+bash-4.3# ls opt/spark-apps/
+learning-spark-mini-example_2.11-0.0.1.jar
+
+bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output-2
+...
+2019-03-19 12:26:45 WARN  NioEventLoop:146 - Selector.select() returned prematurely 512 times in a row; rebuilding Selector io.netty.channel.nio.SelectedSelectionKeySetSelector@daa72fb.
+2019-03-19 12:26:45 INFO  NioEventLoop:101 - Migrated 1 channel(s) to the new Selector.
+2019-03-19 12:26:45 INFO  MemoryStore:54 - MemoryStore cleared
+2019-03-19 12:26:45 INFO  BlockManager:54 - BlockManager stopped
+2019-03-19 12:26:45 INFO  BlockManagerMaster:54 - BlockManagerMaster stopped
+2019-03-19 12:26:45 INFO  OutputCommitCoordinator$OutputCommitCoordinatorEndpoint:54 - OutputCommitCoordinator stopped!
+2019-03-19 12:26:45 INFO  SparkContext:54 - Successfully stopped SparkContext
+2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Shutdown hook called
+2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-bec6ba85-f0d5-49dd-8f98-99aab60e4018
+2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-3d780320-6b6a-49e9-85e4-33ba83f1f8b7
 
 # Summary (What have I done :O?)
 
