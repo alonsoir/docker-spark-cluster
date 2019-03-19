@@ -181,7 +181,8 @@ set SPARK_SUBMIT_ARGS "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+
 
 #We have to use the same network as the spark cluster(internally the image resolves spark master as spark://spark-master:7077)
 
-docker run --network docker-spark-cluster_spark-network -v /tmp/spark-apps:/opt/spark-apps --env SPARK_APPLICATION_JAR_LOCATION=$SPARK_APPLICATION_JAR_LOCATION --env SPARK_APPLICATION_MAIN_CLASS=$SPARK_APPLICATION_MAIN_CLASS spark-submit:2.4.0
+docker run --network docker-spark-cluster_spark-network -v /tmp/spark-apps:/opt/spark-apps --env APP_JARS="/opt/spark-data/README.md /opt/spark-data/output-3" --env SPARK_APPLICATION_JAR_LOCATION=$SPARK_APPLICATION_JAR_LOCATION --env SPARK_APPLICATION_MAIN_CLASS=$SPARK_APPLICATION_MAIN_CLASS spark-submit:2.4.0
+
 
 ```
 
