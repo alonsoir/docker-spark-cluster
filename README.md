@@ -222,3 +222,14 @@ Running Spark using the REST application submission protocol.
 
 * Update spark version from 2.3.1 to 2.4.0. DONE!
 * Change /mnt to /tmp in order to work within OSX. DONE!
+
+# TROUBLESHOOTING
+
+* Make sure that the test jar is compiled with the spark cluster version, in this case I write this, it is version 2.4.0 and make sure you also use provided in the pom.xml to make sure you are also using the spark jar hosted in the spark cluster driver and workers.
+
+* Currently, to launch the work, I have to log into the spark driver and launch the work using the following command:
+
+spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output
+
+
+
