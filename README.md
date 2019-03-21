@@ -12,6 +12,7 @@ spark-master|10.5.0.2
 spark-worker-1|10.5.0.3
 spark-worker-2|10.5.0.4
 spark-worker-3|10.5.0.5
+spark-worker-4|10.5.0.6
 
 # Installation
 
@@ -38,13 +39,13 @@ chmod +x build-images.sh
 
 This will create the following docker images:
 
-* spark-base:2.3.1: A base image based on java:alpine-jdk-8 wich ships scala, python3 and spark 2.3.1
+* spark-base:2.4.0: A base image based on java:alpine-jdk-8 wich ships scala, python3 and spark 2.3.1
 
-* spark-master:2.3.1: A image based on the previously created spark image, used to create a spark master containers.
+* spark-master:2.4.0: A image based on the previously created spark image, used to create a spark master containers.
 
-* spark-worker:2.3.1: A image based on the previously created spark image, used to create spark worker containers.
+* spark-worker:2.4.0: A image based on the previously created spark image, used to create spark worker containers.
 
-* spark-submit:2.3.1: A image based on the previously created spark image, used to create spark submit containers(run, deliver driver and die gracefully).
+* spark-submit:2.4.0: A image based on the previously created spark image, used to create spark submit containers(run, deliver driver and die gracefully).
 
 ## Run the docker-compose
 
@@ -82,9 +83,16 @@ http://10.5.0.5:8081/
 
 ![alt text](docs/spark-worker-3.png "Spark worker 3 UI")
 
+### Spark Worker 4
+
+http://10.5.0.6:8081/
+
+![alt text](docs/spark-worker-4.png "Spark worker 4 UI")
+
+
 # Resource Allocation 
 
-This cluster is shipped with three workers and one spark master, each of these has a particular set of resource allocation(basically RAM & cpu cores allocation).
+This cluster is shipped with four workers and one spark master, each of these has a particular set of resource allocation(basically RAM & cpu cores allocation).
 
 * The default CPU cores allocation for each spark worker is 1 core.
 
@@ -146,6 +154,9 @@ cp README.md /tmp/spark-data/
 This is not a necessary step, just if you are curious you can check if your app code and files are in place before running the spark-submit.
 
 ```sh
+# Master Validations
+docker exec -ti spark-master ls /opt/spark-apps
+
 # Worker 1 Validations
 docker exec -ti spark-worker-1 ls -l /opt/spark-apps
 
@@ -160,6 +171,11 @@ docker exec -ti spark-worker-2 ls -l /opt/spark-data
 docker exec -ti spark-worker-3 ls -l /opt/spark-apps
 
 docker exec -ti spark-worker-3 ls -l /opt/spark-data
+
+#Worker 4 Validations (if you update docker-compose.yml)
+docker exec -ti spark-worker-4 ls -l /opt/spark-apps
+
+docker exec -ti spark-worker-4 ls -l /opt/spark-data
 ```
 After running one of this commands you have to see your app's jar and files.
 
@@ -206,13 +222,21 @@ Running Spark using the REST application submission protocol.
 ```
 ## (Troubleshooting. Running the app using spark-submit command)
 
-After you have the jar file inside folder:
+* After you have the jar file inside folder:
 
+```
 ~/s/docker-spark-cluster> docker exec -ti spark-master /bin/bash
 bash-4.3# ls opt/spark-apps/
 learning-spark-mini-example_2.11-0.0.1.jar
+```
 
+* Remember to change the latest argument, the file must NOT exists. 
+```
 bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output-2
+```
+
+## OUTPUT spark-submit command
+```
 ...
 2019-03-19 12:26:45 WARN  NioEventLoop:146 - Selector.select() returned prematurely 512 times in a row; rebuilding Selector io.netty.channel.nio.SelectedSelectionKeySetSelector@daa72fb.
 2019-03-19 12:26:45 INFO  NioEventLoop:101 - Migrated 1 channel(s) to the new Selector.
@@ -224,6 +248,7 @@ bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Shutdown hook called
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-bec6ba85-f0d5-49dd-8f98-99aab60e4018
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-3d780320-6b6a-49e9-85e4-33ba83f1f8b7
+```
 
 # Summary (What have I done :O?)
 
@@ -254,9 +279,11 @@ bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.
 
 * Make sure that the test jar is compiled with the spark cluster version, in this case I write this, it is version 2.4.0 and make sure you also use provided in the pom.xml to make sure you are also using the spark jar hosted in the spark cluster driver and workers.
 
-* Currently, to launch the work, I have to log into the spark driver and launch the work using the following command:
+* Finally, i have to say that, i personally prefer to log into the spark driver in order to run the task using spark-submit command:
 
+````
 spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output
+````
 
-
+* If you want to add more workers to the cluster, you have to add more workers to docker-compose.yml file. Be sure to check some properties, like container_name, hostname, port, enviroment and ipv4_address.
 
