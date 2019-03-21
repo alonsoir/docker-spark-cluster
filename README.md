@@ -206,13 +206,21 @@ Running Spark using the REST application submission protocol.
 ```
 ## (Troubleshooting. Running the app using spark-submit command)
 
-After you have the jar file inside folder:
+* After you have the jar file inside folder:
 
+```
 ~/s/docker-spark-cluster> docker exec -ti spark-master /bin/bash
 bash-4.3# ls opt/spark-apps/
 learning-spark-mini-example_2.11-0.0.1.jar
+```
 
+* Remember to change the latest argument, the file must NOT exists. 
+```
 bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output-2
+```
+
+## OUTPUT spark-submit command
+```
 ...
 2019-03-19 12:26:45 WARN  NioEventLoop:146 - Selector.select() returned prematurely 512 times in a row; rebuilding Selector io.netty.channel.nio.SelectedSelectionKeySetSelector@daa72fb.
 2019-03-19 12:26:45 INFO  NioEventLoop:101 - Migrated 1 channel(s) to the new Selector.
@@ -224,6 +232,7 @@ bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Shutdown hook called
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-bec6ba85-f0d5-49dd-8f98-99aab60e4018
 2019-03-19 12:26:45 INFO  ShutdownHookManager:54 - Deleting directory /tmp/spark-3d780320-6b6a-49e9-85e4-33ba83f1f8b7
+```
 
 # Summary (What have I done :O?)
 
@@ -254,9 +263,10 @@ bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.
 
 * Make sure that the test jar is compiled with the spark cluster version, in this case I write this, it is version 2.4.0 and make sure you also use provided in the pom.xml to make sure you are also using the spark jar hosted in the spark cluster driver and workers.
 
-* Currently, to launch the work, I have to log into the spark driver and launch the work using the following command:
+* Finally, i have to say that, i personally prefer to log into the spark driver in order to run the task using spark-submit command:
 
+````
 spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output
-
+````
 
 
