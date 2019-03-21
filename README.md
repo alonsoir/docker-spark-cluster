@@ -162,7 +162,11 @@ docker exec -ti spark-worker-2 ls -l /opt/spark-data
 # Worker 3 Validations
 docker exec -ti spark-worker-3 ls -l /opt/spark-apps
 
+docker exec -ti spark-worker-3 ls -l /opt/spark-data
+
 #Worker 4 Validations (if you update docker-compose.yml)
+docker exec -ti spark-worker-4 ls -l /opt/spark-apps
+
 docker exec -ti spark-worker-4 ls -l /opt/spark-data
 ```
 After running one of this commands you have to see your app's jar and files.
