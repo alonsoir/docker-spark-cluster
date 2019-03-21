@@ -12,6 +12,7 @@ spark-master|10.5.0.2
 spark-worker-1|10.5.0.3
 spark-worker-2|10.5.0.4
 spark-worker-3|10.5.0.5
+spark-worker-4|10.5.0.6
 
 # Installation
 
@@ -38,13 +39,13 @@ chmod +x build-images.sh
 
 This will create the following docker images:
 
-* spark-base:2.3.1: A base image based on java:alpine-jdk-8 wich ships scala, python3 and spark 2.3.1
+* spark-base:2.4.0: A base image based on java:alpine-jdk-8 wich ships scala, python3 and spark 2.3.1
 
-* spark-master:2.3.1: A image based on the previously created spark image, used to create a spark master containers.
+* spark-master:2.4.0: A image based on the previously created spark image, used to create a spark master containers.
 
-* spark-worker:2.3.1: A image based on the previously created spark image, used to create spark worker containers.
+* spark-worker:2.4.0: A image based on the previously created spark image, used to create spark worker containers.
 
-* spark-submit:2.3.1: A image based on the previously created spark image, used to create spark submit containers(run, deliver driver and die gracefully).
+* spark-submit:2.4.0: A image based on the previously created spark image, used to create spark submit containers(run, deliver driver and die gracefully).
 
 ## Run the docker-compose
 
@@ -82,9 +83,16 @@ http://10.5.0.5:8081/
 
 ![alt text](docs/spark-worker-3.png "Spark worker 3 UI")
 
+### Spark Worker 4
+
+http://10.5.0.6:8081/
+
+![alt text](docs/spark-worker-4.png "Spark worker 4 UI")
+
+
 # Resource Allocation 
 
-This cluster is shipped with three workers and one spark master, each of these has a particular set of resource allocation(basically RAM & cpu cores allocation).
+This cluster is shipped with four workers and one spark master, each of these has a particular set of resource allocation(basically RAM & cpu cores allocation).
 
 * The default CPU cores allocation for each spark worker is 1 core.
 
