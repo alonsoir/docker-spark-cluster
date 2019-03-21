@@ -66,23 +66,6 @@ services:
     volumes:
        - /tmp/spark-apps:/opt/spark-apps
        - /tmp/spark-data:/opt/spark-data
-  spark-worker-4:
-    image: spark-worker:2.4.0
-    container_name: spark-worker-4
-    hostname: spark-worker-4
-    depends_on:
-      - spark-master
-    ports:
-      - "8084:8081"
-    env_file: ./env/spark-worker.sh
-    environment:
-      - "SPARK_LOCAL_IP=spark-worker-4"
-    networks: 
-      spark-network:
-        ipv4_address: 10.5.0.6
-    volumes:
-       - /tmp/spark-apps:/opt/spark-apps
-       - /tmp/spark-data:/opt/spark-data
 networks:
   spark-network:
     driver: bridge
