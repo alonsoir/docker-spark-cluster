@@ -146,6 +146,9 @@ cp README.md /tmp/spark-data/
 This is not a necessary step, just if you are curious you can check if your app code and files are in place before running the spark-submit.
 
 ```sh
+# Master Validations
+docker exec -ti spark-master ls /opt/spark-apps
+
 # Worker 1 Validations
 docker exec -ti spark-worker-1 ls -l /opt/spark-apps
 
@@ -159,7 +162,8 @@ docker exec -ti spark-worker-2 ls -l /opt/spark-data
 # Worker 3 Validations
 docker exec -ti spark-worker-3 ls -l /opt/spark-apps
 
-docker exec -ti spark-worker-3 ls -l /opt/spark-data
+#Worker 4 Validations (if you update docker-compose.yml)
+docker exec -ti spark-worker-4 ls -l /opt/spark-data
 ```
 After running one of this commands you have to see your app's jar and files.
 
@@ -269,4 +273,5 @@ bash-4.3# spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.
 spark/bin/spark-submit --class com.oreilly.learningsparkexamples.mini.scala.WordCount --master spark://spark-master:7077 /opt/spark-apps/learning-spark-mini-example_2.11-0.0.1.jar /opt/spark-data/README.md /opt/spark-data/output
 ````
 
+* If you want to add more workers to the cluster, you have to add more workers to docker-compose.yml file. Be sure to check some properties, like container_name, hostname, port, enviroment and ipv4_address.
 
